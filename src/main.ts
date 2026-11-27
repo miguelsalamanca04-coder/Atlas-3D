@@ -15,3 +15,11 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     <p>Proyecto arrancado con Vite + TypeScript. Three.js instalado, listo para usarse.</p>
   </div>
 `;
+
+// Registro del Service Worker — Sesión 28.
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/sw.js")
+    .then((reg) => console.log("SW registrado:", reg.scope))
+    .catch((err) => console.error("Error al registrar SW:", err));
+}
