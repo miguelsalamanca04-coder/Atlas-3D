@@ -1,19 +1,23 @@
-Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 32
+Atlas 3D de Arquitectura de Software — checkpoint al cierre de la Sesión 33
 Electiva - PWA · UPTC (Sub-bloque B)
 
 Qué es esto
 -----------
-El Atlas 3D con las 5 estrategias de caché completas y enrutadas por
-tipo de recurso (Sesión 32, espejo de la Sesión 21): Cache First para
-/iconos/, Network First preparado para un futuro /api/ del catálogo de
-modelos, y Stale-While-Revalidate para el resto del shell. Recordatorio
-importante (Sesión 29/32): esto no significa que el proyecto funcione
-sin conexión de verdad — esa limitación (rutas de Vite en desarrollo,
-nombre de bundle con hash en producción) sigue abierta hasta Workbox en
-la Sesión 34. Es el punto de partida de la Sesión 33 (IndexedDB en el
-proyecto) — el caché no cambia en esa sesión, lo que se agrega es
-almacenamiento estructurado aparte, con IndexedDB. No lo reemplaces,
-cotéjalo contra tu propio proyecto si te quedaste atrás.
+El Atlas 3D con IndexedDB ya integrado (Sesión 33, espejo de la Sesión
+22): un store "progreso" (clave modeloId, índices por favorito y por
+última visita) que guarda, por modelo, si se visitó, si es favorito, y
+una nota de estudio personal cifrada con AES-GCM + clave derivada por
+PBKDF2 — exactamente la misma clave y las mismas funciones de cifrado
+del Gestor de Tareas (Sesión 22), reutilizadas sin cambios.
+
+El catálogo real de modelos 3D todavía no existe (dominio/vista/
+controlador son sesiones futuras), así que esta demo usa tres IDs de
+prueba ("modelo-demo-1/2/3") para poder probar el flujo completo de
+progreso, tal como pide la actividad de la guía de la Sesión 33.
+
+El Service Worker sigue siendo el mismo de la Sesión 32, sin cambios —
+y la limitación de offline real (Sesión 29/32) sigue abierta: se
+resuelve en la Sesión 34, con Workbox.
 
 Cómo abrirlo
 ------------
@@ -21,15 +25,23 @@ Cómo abrirlo
   npm run dev
 
 Abre la URL que Vite imprime en la terminal (normalmente
-http://localhost:5173).
+http://localhost:5173). Marca un modelo como visto o favorito, y
+guarda/ve una nota de estudio (pide una contraseña la primera vez — la
+misma descifra la nota después de recargar).
+
+Para ver los datos en crudo: DevTools → Application → IndexedDB →
+atlas3d-progreso-db → progreso. notaCifrada debe verse como bytes
+ilegibles, nunca como el texto original.
 
 Estructura
 ----------
   index.html               documento HTML raíz
   public/manifest.json      el manifest de la Sesión 27
-  public/sw.js              Service Worker de la Sesión 32 (enrutado)
+  public/sw.js              Service Worker de la Sesión 32 (enrutado), sin cambios
   public/iconos/            icon-192.png, icon-512.png, icon-512-maskable.png
-  src/main.ts               punto de entrada + registro del Service Worker
-  src/style.css             estilos base del andamiaje
+  src/main.ts               punto de entrada + demo de progreso con 3 modelos de prueba
+  src/db.ts                 NUEVO (Sesión 33): envoltorio de IndexedDB con los nombres reales del Atlas 3D
+  src/crypto.ts             NUEVO (Sesión 33): mismas funciones de cifrado de la Sesión 22, tipadas
+  src/style.css             estilos del andamiaje + de la demo de progreso
 
 UPTC · Facultad de Ingeniería · Electiva - PWA
