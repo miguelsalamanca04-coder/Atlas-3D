@@ -1,4 +1,5 @@
 import "./style.css";
+import { registerSW } from "virtual:pwa-register";
 import { abrirBaseDeDatos, marcarModeloVisto, alternarFavorito, obtenerTodoElProgreso, guardarNotaDeEstudio } from "./db";
 import { derivarClaveDesdeContrasena, cifrarTexto, descifrarTexto, obtenerOCrearSal } from "./crypto";
 import type { ProgresoModelo } from "./db";
@@ -7,12 +8,17 @@ import type { ProgresoModelo } from "./db";
 // se confirmó en sesiones anteriores; el Service Worker se registró en la
 // Sesión 28 y se migró a estrategias con nombre en la 31-32.
 //
-// Sesión 33: se agrega la capa de progreso en IndexedDB (favoritos, última
+// Sesión 33: se agregó la capa de progreso en IndexedDB (favoritos, última
 // visita, nota de estudio cifrada). El catálogo real de modelos 3D —
 // dominio, vista, controlador — todavía no existe (se construye en sesiones
 // futuras del Sub-bloque B), así que esta demo usa tres IDs de prueba, tal
 // como indica la Actividad de la guía de la Sesión 33, en vez de inventar
 // archivos .glb/.gltf que no están en el proyecto.
+//
+// Sesión 34: el sw.js manual de las Sesiones 28-32 desaparece. Ahora lo
+// genera vite-plugin-pwa (Workbox integrado al build de Vite) — ver
+// vite.config.ts — y se registra con registerSW() de virtual:pwa-register
+// en vez de navigator.serviceWorker.register('/sw.js') a mano.
 
 const MODELOS_DEMO: { id: string; nombre: string }[] = [
   { id: "modelo-demo-1", nombre: "Patrón MVC (de prueba)" },
@@ -130,10 +136,13 @@ async function iniciar() {
 
 iniciar();
 
-// Registro del Service Worker — Sesión 28.
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("/sw.js")
-    .then((reg) => console.log("SW registrado:", reg.scope))
-    .catch((err) => console.error("Error al registrar SW:", err));
-}
+// Registro del Service Worker generado por Workbox — Sesión 34.
+registerSW({
+  immediate: true,
+  onRegisteredSW(swUrl, registration) {
+    console.log("SW de Workbox registrado:", swUrl, registration);
+  },
+  onRegisterError(error) {
+    console.error("Error al registrar el SW de Workbox:", error);
+  },
+});
