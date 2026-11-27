@@ -32,11 +32,6 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Cache First (Sesión 31, espejo de la Sesión 20): se ensaya sobre los
-// íconos y el manifest, que son los únicos assets "pesados y poco
-// cambiantes" que el proyecto tiene hoy — el mismo rol que tendrán los
-// modelos .glb/.gltf cuando existan. Enrutar varias estrategias por
-// tipo de recurso es el trabajo de la Sesión 32.
 function cacheFirst(peticion) {
   return caches.match(peticion).then(enCache => {
     if (enCache) return enCache;
@@ -48,6 +43,37 @@ function cacheFirst(peticion) {
   });
 }
 
+function networkFirst(peticion) {
+  return fetch(peticion)
+    .then(respuesta => {
+      const clon = respuesta.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(peticion, clon));
+      return respuesta;
+    })
+    .catch(() => caches.match(peticion));
+}
+
+function staleWhileRevalidate(peticion) {
+  return caches.open(CACHE_NAME).then(cache =>
+    cache.match(peticion).then(enCache => {
+      const actualizacion = fetch(peticion).then(respuesta => {
+        cache.put(peticion, respuesta.clone());
+        return respuesta;
+      });
+      return enCache || actualizacion;
+    })
+  );
+}
+
+// Enrutado por tipo de recurso (Sesión 32, espejo de la Sesión 21).
 self.addEventListener('fetch', event => {
-  event.respondWith(cacheFirst(event.request));
+  const url = new URL(event.request.url);
+
+  if (url.pathname.startsWith('/iconos/')) {
+    event.respondWith(cacheFirst(event.request));
+  } else if (url.pathname.startsWith('/api/')) {
+    event.respondWith(networkFirst(event.request));
+  } else {
+    event.respondWith(staleWhileRevalidate(event.request));
+  }
 });
