@@ -1,0 +1,28 @@
+Atlas 3D de Arquitectura de Software
+====================================
+Proyecto del Sub-bloque B — Electiva PWA (UPTC)
+
+ESTE ZIP
+--------
+Checkpoint de referencia de la Sesión 27 (Arranque del proyecto y su
+manifiesto) — exactamente el resultado esperado al final de esa clase,
+ni más ni menos:
+
+  - El andamiaje que genera `npm create vite@latest -- --template vanilla-ts`
+  - Three.js instalado como dependencia (todavía sin usar)
+  - public/manifest.json y sus tres íconos, enlazado en index.html
+
+Nada de src/dominio, src/datos, src/vista ni src/controlador todavía —
+esas capas se construyen sesión a sesión a lo largo del Sub-bloque B,
+nunca antes de que la guía correspondiente las explique.
+
+Úsalo si te quedaste atrás en algún paso de la Sesión 27, o para
+comparar tu resultado — no como reemplazo de seguir la guía paso a paso,
+y no como adelanto de sesiones futuras.
+
+CÓMO EJECUTARLO
+----------------
+  npm install
+  npm run dev
+
+Abre la URL que te indique la terminal (normalmente http://localhost:5173).
